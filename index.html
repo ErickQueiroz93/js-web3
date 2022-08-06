@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html dir="ltr" lang="pt-br">
+<head>
+    <meta charset="utf-8">
+    <title>Web 3</title>
+
+    <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+    <script src="https://www.unpkg.com/web3@1.7.0/dist/web3.min.js"></script>
+    <script type="text/javascript" src="https://unpkg.com/web3modal"></script>
+    <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/evm-chains@0.2.0/dist/umd/index.min.js"></script>
+    <script type="text/javascript" src="https://unpkg.com/@walletconnect/web3-provider"></script>
+
+    <link href="//cdn.jsdelivr.net/npm/@sweetalert2/theme-dark@3/dark.css" rel="stylesheet">
+    <script src="//cdn.jsdelivr.net/npm/sweetalert2@9/dist/sweetalert2.min.js"></script>
+
+    <script
+            src="https://code.jquery.com/jquery-3.6.0.min.js"
+            integrity="sha256-/xUj+3OJU5yExlq6GSYGSHk7tPXikynS7ogEvDej/m4="
+            crossorigin="anonymous"></script>
+
+    <script>
+        const Web3Modal = window.Web3Modal.default;
+        const WalletConnectProvider = window.WalletConnectProvider.default;
+        const EvmChains = window.evmChains;
+        let provider;
+
+        function init() {
+            const providerOptions = {
+                walletconnect: {
+                    package: WalletConnectProvider,
+                    options: {
+                        infuraId: "52de0e1587c746f7bbd10b8c13ebd6e0",
+                        qrcodeModalOptions: {
+                            mobileLinks: [
+                                "rainbow",
+                                "metamask",
+                                "argent",
+                                "trust",
+                                "imtoken",
+                                "pillar",
+                            ],
+                        },
+                    }
+                },
+            };
+
+            web3Modal = new Web3Modal({
+                cacheProvider: true, // optional
+                providerOptions, // required
+                disableInjectedProvider: false
+            });
+            console.log(web3Modal);
+        }
+
+        async function onConnect() {
+            try {
+                provider = await web3Modal.connect();
+                console.log(provider);
+            } catch (e) {
+                console.log("Could not get a wallet connection", e);
+                return;
+            }
+
+            provider.on("accountsChanged", (account) => {
+                console.log(account);
+            });
+
+            provider.on("chainChanged", (chainId) => {
+                console.log("chainId " + chainId);
+            });
+
+            provider.on("networkChanged", (networkId) => {
+                console.log("networkId " + networkId);
+            });
+
+        }
+
+        async function addToken() {
+            const symbol = 'BALLERS';
+            const decimal = 18;
+            const image = 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSVxFKei3JnIBp5_i-hMhgiJrCc6_g2lFczc55LWY3HEZHCgxJilfJxlRZJxEPjlrZXbzU&usqp=CAU';
+
+            const token = await provider.request({
+                method: "wallet_watchAsset",
+                params: {
+                    type: "ERC20",
+                    options: {
+                        address: "0x22ef56e809f2bc34b50eb7044a3dd82ad1a5669d",
+                        symbol: symbol,
+                        decimals: decimal,
+                        image: image
+                    },
+                },
+            }).then(function (res) {
+                console.log(res)
+            }).catch(function (e) {
+                console.log(e)
+            });
+        }
+
+    </script>
+
+</head>
+<body>
+
+
+</body>
+</html>
